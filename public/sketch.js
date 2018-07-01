@@ -1,22 +1,35 @@
 let video;
 let poseNet;
 let poses = [];
-let skeletons = [];
 let socket;
+let state = 'ONE_PERSON';
+let featureDim = 20;
 
 let canvasWidth = 640, canvasHeight = 480;
 
 function setup() {
   // Create the canvas element
-  //createCanvas(canvasWidth, canvasHeight);
+  const canvas = createCanvas(windowWidth, windowHeight);
+  canvas.parent('canvas');
   // Open the socket communication
   //startWebSocket();
   // Start the video feed
-  //startVideo();
+  startVideo();
   // Start Pose estimation on the video feed
-  //startPosenet();
+  startPosenet();
   // Hide the mouse cursor
-  //noCursor();
+  noCursor();
+  fill(255, 0, 0);
+  noStroke();
+  // Render rest state
+  renderRest();
+}
+
+function draw() {
+  background(255);
+  if(state == 'ONE_PERSON' || state == 'TWO_PEOPLE' || state == 'AUTHENTICATE') {
+    renderSkeleton();
+  }
 }
 
 function startPosenet() {
@@ -83,7 +96,7 @@ function gotPoses(results) {
   }
   
   // Send data
-  socket.emit('inputData', totalFeatures);
+  //socket.emit('inputData', totalFeatures);
 }
 
 // When there is a new message, render the result visually in the browser
@@ -92,20 +105,115 @@ function onSocketMessage(data) {
   renderToBrowser(prediction);
 }
 
+// Based on the prediction, render a different scendario
 function renderToBrowser(prediction) {
-  console.log(poses, prediction);
-  const firstPoint = poses[0].pose.keypoints[0].position;
-  console.log(firstPoint);
-  console.log(toBrowserPercentage(firstPoint));
+  switch(prediction) {
+    case 0:
+      state = 'REST';
+      renderRest();
+    break;
+    case 1:
+      state = 'ONE_PERSON';
+      renderLandingHalf();
+    break;
+    case 2:
+      state = 'TWO_PEOPLE';
+      renderLandingComplete();
+    break;
+    case 3:
+      state = 'AUTHENTICATE';
+      renderAuthenticate();
+    break;
+    case 4:
+      state = 'DISGUISE';
+      renderDisguise();
+    break;
+  }
 }
+
+function renderRest() {
+
+}
+
+function renderLandingHalf() {
+  //const firstPoint = poses[0].pose.keypoints[0].position;
+  //console.log(firstPoint);
+  //console.log(cameraToBrowserCoords(firstPoint));
+}
+
+function renderLandingComplete() {
+
+}
+
+function renderAuthenticate() {
+
+}
+
+function renderDisguise() {
+  hideAll();
+  disguise.play();
+}
+
+function hideAll() {
+
+}
+
+// Renders skeleton points in the canvas
+function renderSkeleton() {
+  poses.reduce((prevPose, nextPose) => {  
+    nextPose.pose.keypoints.map(d => ellipse(d.position.x, d.position.y, featureDim, featureDim))
+  }, '');
+}
+
 
 
 /*
  * Utilities
  */
-function toBrowserPercentage(cameraValue) {
+function cameraToBrowserCoords(pointPos) {
   return {
-    x: cameraValue.x * 100 / canvasWidth,
-    y: cameraValue.y * 100 / canvasHeight
+    x: pointPos.x * 100 / canvasWidth,
+    y: pointPos.y * 100 / canvasHeight
   };
 }
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+
+
+
+
+
+
+
+class Disguise {
+  constructor(wrapperId) {
+    this.player = undefined;
+    this.wrapperId = wrapperId;
+  }
+
+  load() {
+    this.player = new YT.Player(this.wrapperId, {
+      width: 600,
+      height: 400,
+      videoId: 'fbhz3XcNzGU'
+    });
+  }
+
+  play() {
+    this.player.playVideo();
+  }
+
+  stop() {
+    this.player.stopVideo();
+  }
+}
+
+const disguise = new Disguise('disguise');
+window.onYouTubeIframeAPIReady = () => disguise.load();
+// after
+//disguise.play();
+
+
