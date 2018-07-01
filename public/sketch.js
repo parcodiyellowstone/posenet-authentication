@@ -2,10 +2,49 @@ let video;
 let poseNet;
 let poses = [];
 let socket;
-let state = 'ONE_PERSON';
+let state = 'REST';
 let featureDim = 20;
+let disguise;
+let gallery;
+
+// specchiare canvas + dimensione pallini resize
+
+const spans = document.querySelectorAll('h1 span');
+const spans_layer0 = document.querySelectorAll('h1 span.layer_0');
+const spans_layer1 = document.querySelectorAll('h1 span.layer_1');
+const spans_layer2 = document.querySelectorAll('h1 span.layer_2');
+const disguiseElement = document.querySelector('.disguise-wrapper');
+const authenticatedElement = document.querySelector('.authenticated-wrapper');
 
 let canvasWidth = 640, canvasHeight = 480;
+
+class Disguise {
+  constructor(wrapperId) {
+    this.player = undefined;
+    this.wrapperId = wrapperId;
+  }
+
+  load() {
+    this.player = new YT.Player(this.wrapperId, {
+      width: 600,
+      height: 400,
+      videoId: 'fbhz3XcNzGU'
+    });
+  }
+
+  play() {
+    this.player.playVideo();
+  }
+
+  stop() {
+    this.player.stopVideo();
+  }
+}
+
+
+
+disguise = new Disguise('disguise');
+window.onYouTubeIframeAPIReady = () => disguise.load();
 
 function setup() {
   // Create the canvas element
@@ -21,6 +60,8 @@ function setup() {
   noCursor();
   fill(255, 0, 0);
   noStroke();
+  // Init image gallery
+  initGallery();
   // Render rest state
   renderRest();
 }
@@ -45,7 +86,7 @@ function startWebSocket() {
 function startVideo() {
   video = createCapture(VIDEO);
   video.size(width, height);
-  //video.hide();
+  video.hide();
 }
 
 function gotPoses(results) {
@@ -113,12 +154,16 @@ function renderToBrowser(prediction) {
       renderRest();
     break;
     case 1:
-      state = 'ONE_PERSON';
-      renderLandingHalf();
+      if(state != 'AUTHENTICATE') {
+        state = 'ONE_PERSON';
+        renderLandingHalf();  
+      }
     break;
     case 2:
-      state = 'TWO_PEOPLE';
-      renderLandingComplete();
+      if(state != 'AUTHENTICATE') {
+        state = 'TWO_PEOPLE';
+        renderLandingComplete();  
+      }
     break;
     case 3:
       state = 'AUTHENTICATE';
@@ -131,38 +176,75 @@ function renderToBrowser(prediction) {
   }
 }
 
-function renderRest() {
 
+
+function renderRest() {
+  disguiseElement.classList.remove('visible');
+  authenticatedElement.classList.remove('visible');
+  addToAll(spans, 'hidden');
+  removeFromAll(spans_layer0, 'hidden');
 }
 
 function renderLandingHalf() {
-  //const firstPoint = poses[0].pose.keypoints[0].position;
-  //console.log(firstPoint);
-  //console.log(cameraToBrowserCoords(firstPoint));
+  disguiseElement.classList.remove('visible');
+  authenticatedElement.classList.remove('visible');
+  addToAll(spans, 'hidden');
+  removeFromAll(spans_layer1, 'hidden');
 }
 
 function renderLandingComplete() {
-
+  disguiseElement.classList.remove('visible');
+  authenticatedElement.classList.remove('visible');
+  addToAll(spans, 'hidden');
+  removeFromAll(spans_layer2, 'hidden');
 }
 
 function renderAuthenticate() {
-
+  disguiseElement.classList.remove('visible');
+  authenticatedElement.classList.add('visible');
+  removeFromAll(spans, 'hidden');
+  // sei loggato
 }
 
 function renderDisguise() {
-  hideAll();
+  addToAll(spans, 'hidden');
+  authenticatedElement.classList.remove('visible');
+  disguiseElement.classList.add('visible');
   disguise.play();
-}
-
-function hideAll() {
-
 }
 
 // Renders skeleton points in the canvas
 function renderSkeleton() {
-  poses.reduce((prevPose, nextPose) => {  
-    nextPose.pose.keypoints.map(d => ellipse(d.position.x, d.position.y, featureDim, featureDim))
-  }, '');
+  for(let i = 0; i < poses.length; i++) {
+    const pose = poses[i].pose;
+    if(i == 0) {
+      fill(255, 0, 0);
+    } else
+    if(i == 1) {
+      fill(0, 255, 0);
+    } else
+    if(i == 2) {
+      fill(0, 0, 255);
+    }
+    pose.keypoints.map(d => ellipse(d.position.x, d.position.y, featureDim, featureDim))
+  }    
+}
+
+function initGallery() {
+  gallery = new Siema({
+    selector: '.gallery',
+    // duration: 200,
+    // easing: 'ease-out',
+    // perPage: 1,
+    // startIndex: 0,
+    // draggable: true,
+    // multipleDrag: true,
+    // threshold: 20,
+    // loop: false,
+    // rtl: false,
+    // onInit: () => {},
+    // onChange: () => {},
+  });
 }
 
 
@@ -181,39 +263,23 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-
-
-
-
-
-
-
-class Disguise {
-  constructor(wrapperId) {
-    this.player = undefined;
-    this.wrapperId = wrapperId;
-  }
-
-  load() {
-    this.player = new YT.Player(this.wrapperId, {
-      width: 600,
-      height: 400,
-      videoId: 'fbhz3XcNzGU'
-    });
-  }
-
-  play() {
-    this.player.playVideo();
-  }
-
-  stop() {
-    this.player.stopVideo();
+function addToAll(els, classToAdd) {
+  const _els = [...els];
+  for(let i = 0; i < _els.length; i++) {
+    _els[i].classList.add(classToAdd);
   }
 }
 
-const disguise = new Disguise('disguise');
-window.onYouTubeIframeAPIReady = () => disguise.load();
-// after
-//disguise.play();
+function removeFromAll(els, classToRemove) {
+  const _els = [...els];
+  for(let i = 0; i < _els.length; i++) {
+    _els[i].classList.remove(classToRemove);
+  }
+}
+
+
+
+
+
 
 
