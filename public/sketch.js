@@ -4,17 +4,19 @@ let poses = [];
 let skeletons = [];
 let socket;
 
+let canvasWidth = 640, canvasHeight = 480;
+
 function setup() {
   // Create the canvas element
-  createCanvas(640, 480);
+  //createCanvas(canvasWidth, canvasHeight);
   // Open the socket communication
-  startWebSocket();
+  //startWebSocket();
   // Start the video feed
-  startVideo();
+  //startVideo();
   // Start Pose estimation on the video feed
-  startPosenet();
+  //startPosenet();
   // Hide the mouse cursor
-  noCursor();
+  //noCursor();
 }
 
 function startPosenet() {
@@ -23,7 +25,8 @@ function startPosenet() {
 
 function startWebSocket() {
   socket = io.connect(window.location.origin);
-  socket.on('ping', data => console.log(data));
+  socket.on('ping', data => {});
+  socket.on('outputData', onSocketMessage);
 }
 
 function startVideo() {
@@ -81,4 +84,28 @@ function gotPoses(results) {
   
   // Send data
   socket.emit('inputData', totalFeatures);
+}
+
+// When there is a new message, render the result visually in the browser
+function onSocketMessage(data) {
+  const prediction = data.args[0].value;
+  renderToBrowser(prediction);
+}
+
+function renderToBrowser(prediction) {
+  console.log(poses, prediction);
+  const firstPoint = poses[0].pose.keypoints[0].position;
+  console.log(firstPoint);
+  console.log(toBrowserPercentage(firstPoint));
+}
+
+
+/*
+ * Utilities
+ */
+function toBrowserPercentage(cameraValue) {
+  return {
+    x: cameraValue.x * 100 / canvasWidth,
+    y: cameraValue.y * 100 / canvasHeight
+  };
 }

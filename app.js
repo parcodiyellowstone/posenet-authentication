@@ -43,7 +43,7 @@ io.on('connection', function (socket) {
   socket.emit('ping', "WebSocket link works");
 
   socket.on('inputData', function (data) {
-    console.log(data);
+    //console.log(data);
     inputDeviceData(data);
   });
 

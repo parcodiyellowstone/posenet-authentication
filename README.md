@@ -21,5 +21,5 @@ Pixels are read from the camera, then transformed in a/several pose estimation b
 This example is built with
 - [ml5.js](https://ml5js.org/) and it's [Posenet](https://ml5js.org/docs/PoseNet) implementation
 - [p5.js](https://p5js.org/) under the hood
-- [a browser/wekinator bridge](https://github.com/fredeerock/wekp5) (OSC + websockets + node.js) built by @fredeerock
+- [a browser/wekinator bridge](https://github.com/fredeerock/wekp5) (OSC + websockets + node.js) built by @fredeerock which is based onto [noisyneuron's integration](https://github.com/noisyneuron/wekOsc)
 - [wekinator](http://www.wekinator.org/)
