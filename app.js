@@ -28,15 +28,10 @@ console.log("Webpage port: " + webpagePort);
 
 /// SENDS OSC ///
 
-inputDeviceData = function(x, y) {
-  var buf;
-  buf = osc.toBuffer({
+inputDeviceData = function(args) {
+  var buf = osc.toBuffer({
     address: "/wek/inputs",
-    args: [
-      { type: "float", value: x },
-      { type: "float", value: y },
-      { type: "float", value: Math.random() }
-    ]
+    args
   });
 
   return udp.send(buf, 0, buf.length, inputPort, remoteIP);
@@ -49,7 +44,7 @@ io.on('connection', function (socket) {
 
   socket.on('inputData', function (data) {
     console.log(data);
-    inputDeviceData(data.x, data.y);
+    inputDeviceData(data);
   });
 
   /// RECEIVE OSC ///
