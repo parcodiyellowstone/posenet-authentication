@@ -25,14 +25,12 @@ After downloading and opening [Wekinator](http://www.wekinator.org/), you config
 - type of output: all classifiers
 - 4 classes
 
-![Wekinator setup]
-(https://parcodiyellowstone.it/docs/1807_workshop_machine_learning_muda/wekinator_setup.png)
+![Wekinator setup](https://parcodiyellowstone.it/docs/1807_workshop_machine_learning_muda/wekinator_setup.png)
 
 Then you click "Next >", go back to the scripts folder and type `npm run train` into the console.
 At this point, if you open the browser at [http://localhost:3000](http://localhost:3000), your Wekinator OSC in should turn green, which means that the OSC bridge is up and running.
 
-![Wekinator setup]
-(https://parcodiyellowstone.it/docs/1807_workshop_machine_learning_muda/wekinator_osc_light.png)
+![Wekinator setup](https://parcodiyellowstone.it/docs/1807_workshop_machine_learning_muda/wekinator_osc_light.png)
 
 
 ## Training Wekinator
@@ -57,20 +55,17 @@ See [this video screencast]() to set it up yourself.
 Passwords are commonly seen as a private and individual thing, designed in order to keep our private secret, but what if could have a password that belongs to a community or to a group of people and actually needs that group of people to work?
 In “Divided we fall” authentication is articulated through 4 different steps or states:
 
-![State 0]
-(https://parcodiyellowstone.it/docs/1807_workshop_machine_learning_muda/project_state0.png)
+![State 0](https://parcodiyellowstone.it/docs/1807_workshop_machine_learning_muda/project_state0.png)
 
 State #1: While nobody is in front of the machine the application is resting and displaying a hidden non-sense message
 State #2:   If a single person is sitting in front of the machine more letters appear in the message still not making sense
 State #3: If two persons are around the message starts to make sense but still nothing is happening
 
-![State 3]
-(https://parcodiyellowstone.it/docs/1807_workshop_machine_learning_muda/project_state3.png)
+![State 3](https://parcodiyellowstone.it/docs/1807_workshop_machine_learning_muda/project_state3.png)
 
 State #4: Only once that people execute a special move they can unlock the application and authenticate to their private contents
 
-![State 4]
-(https://parcodiyellowstone.it/docs/1807_workshop_machine_learning_muda/project_state4.png)
+![State 4](https://parcodiyellowstone.it/docs/1807_workshop_machine_learning_muda/project_state4.png)
 
 (We also tried to add a fifth state in order to disguise the content if a third person appears. Due to technical issues with Posenet we sadly gave up on this.)
 
