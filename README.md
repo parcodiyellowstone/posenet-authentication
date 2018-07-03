@@ -1,4 +1,4 @@
-# Password experiment using Posenet
+# Authentication experiment using Posenet
 This is an experiment in building a machine learning authentication system for groups of people. The assumption is that passwords can not only be used as a means to conceil something, but as a public act between friends, people who have interests or business together, or groups. A longer and more precise description can be found at the end of this document.
 
 # Demo
